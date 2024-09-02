@@ -1,0 +1,26 @@
+<div>
+    <p>總金額：</p>
+    <p style="font-size: 2rem;">{{totalAmount}}</p>
+</div>
+
+<div>
+    {{#each records as |record|}}
+    <div style="border: 1px solid #aaaaaa;">
+        <p>{{ record.name }}</p>
+        <p>{{ record.date }}</p>
+        <p>{{ record.amount }}</p>
+    </div>
+    <a href="/records/{{record.id}}/edit">
+        <button>修改</button>
+    </a>
+    <a href="/records/{{record.id}}/delete-confirm">
+        <button>刪除</button>
+    </a>
+    {{/each}}
+</div>
+
+<div>
+    <a href="/records/new">
+        <button>新增支出</button>
+    </a>
+</div>

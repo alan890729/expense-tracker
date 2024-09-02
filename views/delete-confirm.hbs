@@ -1,0 +1,23 @@
+<h1>你確定要刪除此支出紀錄？</h1>
+
+<div style="border: 1px solid #aaaaaa;">
+    <p>{{ record.name }}</p>
+    <p>{{ record.date }}</p>
+    <p>{{ record.amount }}</p>
+</div>
+
+<div>
+
+    <div>
+        <form action="/records/{{record.id}}/?_method=DELETE" method="post">
+            <button type="submit">刪除</button>
+        </form>
+    </div>
+
+    <div>
+        <a href="/records">
+            <button>返回</button>
+        </a>
+    </div>
+
+</div>

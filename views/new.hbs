@@ -1,0 +1,38 @@
+<h1>請輸入你的支出</h1>
+
+<div>
+    <form action="/records" method="post">
+
+        <div>
+            <div>
+                <label for="name">名稱*</label>
+            </div>
+            <div>
+                <input type="text" id="name" name="name" required>
+            </div>
+        </div>
+
+        <div>
+            <div>
+                <label for="date">日期*</label>
+            </div>
+            <div>
+                <input type="date" id="date" name="date" required>
+            </div>
+        </div>
+
+        <div>
+            <div>
+                <label for="amount">金額*</label>
+            </div>
+            <div>
+                <input type="number" id="amount" name="amount" required>
+            </div>
+        </div>
+
+        <div>
+            <button type="post">新增支出</button>
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,38 @@
+<h1>請修改你的支出</h1>
+
+<div>
+    <form action="/records/{{record.id}}/?_method=PUT" method="post">
+
+        <div>
+            <div>
+                <label for="name">名稱*</label>
+            </div>
+            <div>
+                <input type="text" id="name" name="name" value="{{record.name}}" required>
+            </div>
+        </div>
+        
+        <div>
+            <div>
+                <label for="date">日期*</label>
+            </div>
+            <div>
+                <input type="date" id="date" name="date" value="{{record.date}}" required>
+            </div>
+        </div>
+        
+        <div>
+            <div>
+                <label for="amount">金額*</label>
+            </div>
+            <div>
+                <input type="number" id="amount" name="amount" value="{{record.amount}}" required>
+            </div>
+        </div>
+        
+        <div>
+            <button type="post">送出</button>
+        </div>
+
+    </form>
+</div>
