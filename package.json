@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "migrate": "npx sequelize db:migrate",
+    "seed": "npx sequelize db:seed --seed ./seeders/20240903083634-categorySeeder.js && npx sequelize db:seed --seed ./seeders/20240902122151-recordSeeder.js"
   },
   "author": "Alan Huang",
   "license": "ISC",

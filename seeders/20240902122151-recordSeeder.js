@@ -10,6 +10,7 @@ module.exports = {
           name: '排骨便當',
           date: '2024-09-02',
           amount: 100,
+          categoryId: 4,
           createdAt: new Date(),
           updatedAt: new Date()
         }
