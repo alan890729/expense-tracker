@@ -7,7 +7,7 @@ const router = express.Router()
 const Record = db.Record
 const Category = db.Category
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
     return Promise.all([
         Category.findAll({
             attributes: ['id', 'name'],
@@ -34,32 +34,38 @@ router.get('/', (req, res) => {
 
         return res.render('index', { records, categories, totalAmount })
     }).catch((err) => {
-        return res.status(422).json(err)
+        err.errorMessage = '前往頁面的過程發生了錯誤'
+        return next(err)
     })
 })
 
-router.get('/new', (req, res) => {
+router.get('/new', (req, res, next) => {
     return Category.findAll({
         attributes: ['id', 'name'],
         raw: true
     }).then((categories) => {
         return res.render('new', { categories })
+    }).catch((err) => {
+        err.errorMessage = '前往頁面的過程發生了錯誤'
+        return next(err)
     })
 })
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
     const body = req.body
     body.categoryId = +body.categoryId
     body.amount = +body.amount
 
     return Record.create(body).then((result) => {
+        req.flash('success', '成功新增一筆支出')
         return res.redirect('/records')
     }).catch((err) => {
-        return res.status(422).json(err)
+        err.errorMessage = '新增一筆支出時發生了錯誤'
+        return next(err)
     })
 })
 
-router.get('/filtered-by/:category', (req, res) => {
+router.get('/filtered-by/:category', (req, res, next) => {
     const categoryName = req.params.category
 
     return Category.findOne({
@@ -100,11 +106,12 @@ router.get('/filtered-by/:category', (req, res) => {
 
         return res.render('filtered-records', { categories, records, totalAmount })
     }).catch((err) => {
-        return res.status(422).json(err)
+        err.errorMessage = '前往頁面的過程發生了錯誤'
+        return next(err)
     })
 })
 
-router.get('/:id/edit', (req, res) => {
+router.get('/:id/edit', (req, res, next) => {
     const recordId = +req.params.id
 
     return Promise.all([
@@ -135,11 +142,12 @@ router.get('/:id/edit', (req, res) => {
 
         return res.render('edit', { record, categories })
     }).catch((err) => {
-        return res.status(422).json(err)
+        err.errorMessage = '前往頁面的過程發生了錯誤'
+        return next(err)
     })
 })
 
-router.put('/:id', (req, res) => {
+router.put('/:id', (req, res, next) => {
     const recordId = +req.params.id
     const body = req.body
     body.categoryId = +body.categoryId
@@ -151,13 +159,15 @@ router.put('/:id', (req, res) => {
             where: { id: recordId }
         }
     ).then((result) => {
+        req.flash('success', '成功修改了一筆支出')
         return res.redirect('/records')
     }).catch((err) => {
-        return res.status(422).json(err)
+        err.errorMessage = '修改一筆支出時發生了錯誤'
+        return next(err)
     })
 })
 
-router.get('/:id/delete-confirm', (req, res) => {
+router.get('/:id/delete-confirm', (req, res, next) => {
     const recordId = +req.params.id
 
     return Record.findByPk(
@@ -176,19 +186,22 @@ router.get('/:id/delete-confirm', (req, res) => {
         record.icon = categoryIcons[record['Category.name']]
         return res.render('delete-confirm', { record })
     }).catch((err) => {
-        return res.status(422).json(err)
+        err.errorMessage = '前往頁面的過程發生了錯誤'
+        return next(err)
     })
 })
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req, res, next) => {
     const recordId = +req.params.id
 
     return Record.destroy({
         where: { id: recordId }
     }).then((result) => {
+        req.flash('success', '成功刪除了一筆支出')
         return res.redirect('/records')
     }).catch((err) => {
-        return res.status(422).json(err)
+        err.errorMessage = '刪除一筆支出時發生了錯誤'
+        return next(err)
     })
 })
 
