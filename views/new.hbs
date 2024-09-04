@@ -23,6 +23,19 @@
 
         <div>
             <div>
+                <label for="categoryId">類別*</label>
+            </div>
+            <div>
+                <select name="categoryId" id="categoryId" required>
+                    {{#each categories as |category|}}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <div>
                 <label for="amount">金額*</label>
             </div>
             <div>

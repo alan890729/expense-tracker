@@ -20,6 +20,19 @@
                 <input type="date" id="date" name="date" value="{{record.date}}" required>
             </div>
         </div>
+
+        <div>
+            <div>
+                <label for="categoryId">類別*</label>
+            </div>
+            <div>
+                <select name="categoryId" id="categoryId">
+                    {{#each categories as |category|}}
+                        <option value="{{category.id}}" {{#if category.prevSelectedCategory}} selected {{/if}}>{{category.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
         
         <div>
             <div>

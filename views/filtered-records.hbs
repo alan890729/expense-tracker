@@ -9,7 +9,8 @@
     </button>
     <ul class="dropdown-menu">
         {{#each categories as |category|}}
-        <li><a class="dropdown-item" href="/records/filtered-by/{{category.name}}">{{category.name}}</a></li>
+        <li><a class="dropdown-item {{#if category.isSelected}} active {{/if}}"
+                href="/records/filtered-by/{{category.name}}">{{category.name}}</a></li>
         {{/each}}
     </ul>
 </div>
