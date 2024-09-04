@@ -3,6 +3,9 @@ const { engine } = require('express-handlebars')
 const methodOverride = require('method-override')
 const session = require('express-session')
 const flash = require('connect-flash')
+if (process.env.NODE_ENV === 'development') {
+    require('dotenv').config()
+}
 
 const router = require('./routes')
 const messageHandler = require('./middlewares/message-handler')
@@ -18,7 +21,7 @@ app.set('view engine', '.hbs')
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(session({
-    secret: 'ThisIsASecret',
+    secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
     resave: false
 }))
