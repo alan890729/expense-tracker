@@ -8,6 +8,8 @@ const Record = db.Record
 const Category = db.Category
 
 router.get('/', (req, res, next) => {
+    const userId = req.user.id
+
     return Promise.all([
         Category.findAll({
             attributes: ['id', 'name'],
@@ -15,6 +17,7 @@ router.get('/', (req, res, next) => {
         }),
         Record.findAll({
             attributes: ['id', 'name', 'date', 'amount'],
+            where: { userId },
             include: [
                 {
                     model: Category,
@@ -30,7 +33,7 @@ router.get('/', (req, res, next) => {
         })
         const totalAmount = records
             .map((record) => record.amount)
-            .reduce((prev, current) => prev + current)
+            .reduce((prev, current) => prev + current, 0)
 
         return res.render('index', { records, categories, totalAmount })
     }).catch((err) => {
@@ -55,6 +58,7 @@ router.post('/', (req, res, next) => {
     const body = req.body
     body.categoryId = +body.categoryId
     body.amount = +body.amount
+    body.userId = req.user.id
 
     return Record.create(body).then((result) => {
         req.flash('success', '成功新增一筆支出')
@@ -67,6 +71,7 @@ router.post('/', (req, res, next) => {
 
 router.get('/filtered-by/:category', (req, res, next) => {
     const categoryName = req.params.category
+    const userId = req.user.id
 
     return Category.findOne({
         attributes: ['id'],
@@ -84,7 +89,7 @@ router.get('/filtered-by/:category', (req, res, next) => {
             }),
             Record.findAll({
                 attributes: ['id', 'name', 'date', 'amount'],
-                where: { categoryId },
+                where: { categoryId, userId },
                 raw: true
             })
         ])
@@ -92,7 +97,7 @@ router.get('/filtered-by/:category', (req, res, next) => {
         const [categories, records] = data
         const totalAmount = records
             .map(record => record.amount)
-            .reduce((prev, current) => prev + current)
+            .reduce((prev, current) => prev + current, 0)
 
         categories.forEach(category => {
             if (categoryName === category.name) {
@@ -113,6 +118,7 @@ router.get('/filtered-by/:category', (req, res, next) => {
 
 router.get('/:id/edit', (req, res, next) => {
     const recordId = +req.params.id
+    const userId = req.user.id
 
     return Promise.all([
         Category.findAll({
@@ -122,7 +128,7 @@ router.get('/:id/edit', (req, res, next) => {
         Record.findByPk(
             recordId,
             {
-                attributes: ['id', 'name', 'date', 'amount'],
+                attributes: ['id', 'name', 'date', 'amount', 'userId'],
                 include: [
                     {
                         model: Category,
@@ -134,6 +140,12 @@ router.get('/:id/edit', (req, res, next) => {
         )
     ]).then((data) => {
         const [categories, record] = data
+
+        if (!record || record.userId !== userId) {
+            req.flash('error', '資料不存在')
+            return res.redirect('/records')
+        }
+
         categories.forEach(category => {
             if (category.name === record['Category.name']) {
                 category.prevSelectedCategory = true
@@ -149,16 +161,29 @@ router.get('/:id/edit', (req, res, next) => {
 
 router.put('/:id', (req, res, next) => {
     const recordId = +req.params.id
+    const userId = req.user.id
     const body = req.body
     body.categoryId = +body.categoryId
     body.amount = +body.amount
 
-    return Record.update(
-        body,
+    return Record.findByPk(
+        recordId,
         {
-            where: { id: recordId }
+            attributes: ['id', 'name', 'date', 'amount', 'categoryId', 'userId']
         }
-    ).then((result) => {
+    ).then((record) => {
+        if (!record || record.userId !== userId) {
+            req.flash('error', '資料不存在')
+            return res.redirect('/records')
+        }
+
+        return record.update(
+            body,
+            {
+                where: { id: recordId }
+            }
+        )
+    }).then((result) => {
         req.flash('success', '成功修改了一筆支出')
         return res.redirect('/records')
     }).catch((err) => {
@@ -169,11 +194,12 @@ router.put('/:id', (req, res, next) => {
 
 router.get('/:id/delete-confirm', (req, res, next) => {
     const recordId = +req.params.id
+    const userId = req.user.id
 
     return Record.findByPk(
         recordId,
         {
-            attributes: ['id', 'name', 'date', 'amount'],
+            attributes: ['id', 'name', 'date', 'amount', 'userId'],
             include: [
                 {
                     model: Category,
@@ -183,6 +209,11 @@ router.get('/:id/delete-confirm', (req, res, next) => {
             raw: true
         }
     ).then((record) => {
+        if (!record || record.userId !== userId) {
+            req.flash('error', '資料不存在')
+            return res.redirect('/records')
+        }
+
         record.icon = categoryIcons[record['Category.name']]
         return res.render('delete-confirm', { record })
     }).catch((err) => {
@@ -193,9 +224,20 @@ router.get('/:id/delete-confirm', (req, res, next) => {
 
 router.delete('/:id', (req, res, next) => {
     const recordId = +req.params.id
+    const userId = req.user.id
 
-    return Record.destroy({
-        where: { id: recordId }
+    return Record.findByPk(
+        recordId,
+        {
+            attributes: ['id', 'userId']
+        }
+    ).then((record) => {
+        if (!record || record.userId !== userId) {
+            req.flash('error', '資料不存在')
+            return res.redirect('/records')
+        }
+
+        return record.destroy()
     }).then((result) => {
         req.flash('success', '成功刪除了一筆支出')
         return res.redirect('/records')
