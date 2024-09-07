@@ -25,6 +25,7 @@ router.post('/login', passport.authenticate('local', {
 router.post('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) {
+            err.errorMessage = '登出失敗'
             return next(err)
         }
 
