@@ -1,61 +1,85 @@
-<h1>註冊</h1>
+<div class="d-flex">
 
-{{> message}}
+    <div class="register-bg-img d-sm-none d-md-block" style=" background-image: url('{{backgroundImg}}') "></div>
 
-<div>
-    <form action="/users" method="post">
-        <div>
-            <div>
-                <label for="name">名字*</label>
+    <div class="container register-input-container register-input-vertical-alignment">
+
+        <div class="row mb-3">
+
+            <div class="col-md-8 col-xl-6 mx-auto">
+
+                <h1 class="mb-3">註冊</h1>
+
+                {{> message}}
+
+                <div class="mb-3">
+                    <form action="/users" method="post">
+                        <div class="form-floating mb-3">
+                            <input type="text" id="name" class="form-control" name="name" required>
+                            <label for="name">名字*</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="email" id="email" class="form-control" name="email" required>
+                            <label for="email">電子郵件*</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" id="password" class="form-control" name="password" required>
+                            <label for="password">密碼*</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" id="confirmPassword" class="form-control" name="confirmPassword"
+                                required>
+                            <label for="confirmPassword">再次確認密碼*</label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-light">註冊</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div>
+                    <span>已經有帳號了嗎？</span>
+                    <a href="/login" class="d-grid text-decoration-none">
+                        <button class="btn btn-light">前往登入</button>
+                    </a>
+                </div>
+
             </div>
-            <div>
-                <input type="text" id="name" name="name" placeholder="請輸入你的名字或暱稱..." required>
-            </div>
+
         </div>
 
-        <div>
-            <div>
-                <label for="email">電子郵件*</label>
+        <div class="row mb-3">
+
+            <div class="col-md-8 col-xl-6 mx-auto">
+
+                <div class="position-relative">
+                    <hr>
+                    <span
+                        class="position-absolute top-50 start-50 translate-middle register-option-separator-content">or</span>
+                </div>
+
             </div>
-            <div>
-                <input type="email" id="email" name="email" placeholder="請輸入電子郵件..." required>
-            </div>
+
         </div>
 
-        <div>
-            <div>
-                <label for="password">密碼*</label>
+        <div class="row">
+
+            <div class="col-md-8 col-xl-6 mx-auto">
+
+                <div>
+                    <a href="/oauth2/login/facebook" class="d-grid text-decoration-none">
+                        <button class="btn btn-light">Facebook快速登入</button>
+                    </a>
+                </div>
+
             </div>
-            <div>
-                <input type="password" id="password" name="password" placeholder="請輸入密碼..." required>
-            </div>
+
         </div>
 
-        <div>
-            <div>
-                <label for="confirmPassword">確認密碼*</label>
-            </div>
-            <div>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="再次確認密碼..." required>
-            </div>
-        </div>
+    </div>
 
-        <div>
-            <button type="submit">註冊</button>
-        </div>
-    </form>
-</div>
-
-<div>
-    <span>使用Facebook快速登入</span>
-    <a href="/oauth2/login/facebook">
-        <button>前往Facebook登入</button>
-    </a>
-</div>
-
-<div>
-    <span>已經有帳號了嗎？</span>
-    <a href="/login">
-        <button>前往登入</button>
-    </a>
 </div>

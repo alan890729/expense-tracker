@@ -1,53 +1,94 @@
-<h1>請輸入你的支出</h1>
-
 {{> message}}
 
-<div>
-    <form action="/records" method="post">
-
-        <div>
-            <div>
-                <label for="name">名稱*</label>
-            </div>
-            <div>
-                <input type="text" id="name" name="name" required>
-            </div>
-        </div>
-
-        <div>
-            <div>
-                <label for="date">日期*</label>
-            </div>
-            <div>
-                <input type="date" id="date" name="date" required>
+<div class="container">
+    <form action="/records" method="post" class="mb-3">
+        <div class="row my-3">
+            <div class="row col-md-8 col-xl-6 mx-auto">
+                <div class="col-md-4 d-md-flex d-none align-items-center">
+                    <div>
+                        <span>*必填欄位</span>
+                    </div>
+                </div>
+                <div class="col-md-8 d-flex justify-content-center">
+                    <h1 class="m-0">請輸入你的支出</h1>
+                </div>
             </div>
         </div>
 
-        <div>
-            <div>
-                <label for="categoryId">類別*</label>
-            </div>
-            <div>
-                <select name="categoryId" id="categoryId" required>
-                    {{#each categories as |category|}}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
-                    {{/each}}
-                </select>
+        <div class="row mb-3 d-md-none">
+            <div class="row col-md-8 col-xl-6 mx-auto">
+                <div>
+                    <span>*必填欄位</span>
+                </div>
             </div>
         </div>
 
-        <div>
-            <div>
-                <label for="amount">金額*</label>
-            </div>
-            <div>
-                <input type="number" id="amount" name="amount" required>
+        <div class="row mb-3">
+            <div class="row col-md-8 col-xl-6 mx-auto">
+                <div class="col-md-4 d-flex align-items-center">
+                    <label for="name" class="form-label m-0">名稱*</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="text" id="name" class="form-control" name="name" required>
+                </div>
             </div>
         </div>
 
-        <div>
-            <button type="post">新增支出</button>
+        <div class="row mb-3">
+            <div class="row col-md-8 col-xl-6 mx-auto">
+                <div class="col-md-4 d-flex align-items-center">
+                    <label for="date" class="form-label m-0">日期*</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="date" id="date" class="form-control" name="date" required>
+                </div>
+            </div>
         </div>
 
+        <div class="row mb-3">
+            <div class="row col-md-8 col-xl-6 mx-auto">
+                <div class="col-md-4 d-flex align-items-center">
+                    <label for="categoryId" class="form-label m-0">類別*</label>
+                </div>
+                <div class="col-md-8">
+                    <select name="categoryId" class="form-select" id="categoryId" required>
+                        {{#each categories as |category|}}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="row col-md-8 col-xl-6 mx-auto">
+                <div class="col-md-4 d-flex align-items-center">
+                    <label for="amount" class="form-label m-0">金額*</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="number" id="amount" class="form-control" name="amount" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="row col-md-8 col-xl-6 mx-auto">
+                <div class="col-md-4"></div>
+                <div class="col-md-8 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-lg btn-light w-50">新增支出</button>
+                </div>
+            </div>
+        </div>
     </form>
+
+    <div class="row">
+        <div class="row col-md-8 col-xl-6 mx-auto">
+            <div class="col-md-4"></div>
+            <div class="col-md-8 d-flex justify-content-center">
+                <div class="w-50">
+                    {{> back-to-index}}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
