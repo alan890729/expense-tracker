@@ -1,7 +1,7 @@
 # 家庭記帳本
 
 簡單、輕鬆的紀錄生活中的支出。
-- [線上觀看連結]()
+- [線上觀看連結](http://expense-tracker-dev.ap-northeast-1.elasticbeanstalk.com/)
 
 ## 專案畫面
 
