@@ -10,64 +10,92 @@ const Category = db.Category
 
 router.get('/', (req, res, next) => {
     const userId = req.user.id
-    const limit = 10
+    const categoryName = req.query.category || null
     const currentPage = +req.query.page || 1
+    const limit = 10
+    const offset = (currentPage - 1) * limit
 
-    return Record.count({
-        where: { userId }
-    }).then((recordsCount) => {
-        const totalPage = pagination.getTotalPage(recordsCount)
-        const prevPage = pagination.getPreviousPage(currentPage)
-        const nextPage = pagination.getNextPage(currentPage, totalPage)
-        const offset = (currentPage - 1) * limit
-        const pageBtnArr = pagination.getPageBtnArr(currentPage, totalPage)
-        pageBtnArr.forEach(pageBtn => {
-            if (pageBtn.pageNum === currentPage) {
-                pageBtn.isActive = true
+    function findRecords(userId, categoryId, limit, offset) {
+        return Record.count({
+            where: categoryId ? { userId, categoryId } : { userId }
+        }).then((recordsCount) => {
+            pagination.generatePaginatorForRender(res, recordsCount, currentPage)
+
+            return Promise.all([
+                Category.findAll({
+                    attributes: ['id', 'name'],
+                    raw: true
+                }),
+                Record.findAll({
+                    attributes: ['id', 'name', 'date', 'amount'],
+                    where: categoryId ? { userId, categoryId } : { userId },
+                    include: categoryId ? [] : [
+                        {
+                            model: Category,
+                            attributes: ['name']
+                        }
+                    ],
+                    limit,
+                    offset,
+                    raw: true
+                }),
+                Record.sum('amount', {
+                    where: categoryId ? { userId, categoryId } : { userId },
+                })
+            ])
+        })
+    }
+
+    if (categoryName) {
+        return Category.findOne({
+            attributes: ['id'],
+            where: {
+                name: categoryName
+            },
+            raw: true
+        }).then((category) => {
+            const categoryId = category.id
+            return findRecords(userId, categoryId, limit, offset)
+        }).then((data) => {
+            let [categories, records, totalAmount] = data
+
+            if (!totalAmount) {
+                totalAmount = 0
             }
-        })
-        res.locals.prevPage = prevPage
-        res.locals.nextPage = nextPage
-        res.locals.pageBtnArr = pageBtnArr
 
-        return Promise.all([
-            Category.findAll({
-                attributes: ['id', 'name'],
-                raw: true
-            }),
-            Record.findAll({
-                attributes: ['id', 'name', 'date', 'amount'],
-                where: { userId },
-                include: [
-                    {
-                        model: Category,
-                        attributes: ['name']
-                    }
-                ],
-                limit,
-                offset,
-                raw: true
-            }),
-            Record.sum('amount', {
-                where: { userId }
+            categories.forEach(category => {
+                if (categoryName === category.name) {
+                    category.isSelected = true
+                }
             })
-        ])
-    }).then((data) => {
-        let [categories, records, totalAmount] = data
 
-        if (!totalAmount) {
-            totalAmount = 0
-        }
+            records.forEach(record => {
+                record.icon = categoryIcons[categoryName]
+            })
 
-        records.forEach(record => {
-            record.icon = categoryIcons[record['Category.name']]
+            return res.render('index', { categories, records, totalAmount, categoryName })
+        }).catch((err) => {
+            err.errorMessage = '前往頁面的過程發生了錯誤'
+            return next(err)
         })
+    } else {
+        return findRecords(userId, null, limit, offset).then((data) => {
+            let [categories, records, totalAmount] = data
 
-        return res.render('index', { records, categories, totalAmount })
-    }).catch((err) => {
-        err.errorMessage = '前往頁面的過程發生了錯誤'
-        return next(err)
-    })
+            if (!totalAmount) {
+                totalAmount = 0
+            }
+
+            records.forEach(record => {
+                record.icon = categoryIcons[record['Category.name']]
+            })
+
+            return res.render('index', { records, categories, totalAmount })
+        }).catch((err) => {
+            err.errorMessage = '前往頁面的過程發生了錯誤'
+            return next(err)
+        })
+    }
 })
 
 router.get('/new', (req, res, next) => {
@@ -93,79 +121,6 @@ router.post('/', (req, res, next) => {
         return res.redirect('/records')
     }).catch((err) => {
         err.errorMessage = '新增一筆支出時發生了錯誤'
-        return next(err)
-    })
-})
-
-router.get('/filtered-by/:category', (req, res, next) => {
-    const categoryName = req.params.category
-    const userId = req.user.id
-    const limit = 10
-    const currentPage = +req.query.page || 1
-
-    return Category.findOne({
-        attributes: ['id'],
-        where: {
-            name: categoryName
-        },
-        raw: true
-    }).then((category) => {
-        const categoryId = category.id
-
-        return Record.count({
-            where: { userId, categoryId }
-        }).then((recordsCount) => {
-            const totalPage = pagination.getTotalPage(recordsCount)
-            const prevPage = pagination.getPreviousPage(currentPage)
-            const nextPage = pagination.getNextPage(currentPage, totalPage)
-            const offset = (currentPage - 1) * limit
-            const pageBtnArr = pagination.getPageBtnArr(currentPage, totalPage)
-            pageBtnArr.forEach(pageBtn => {
-                if (pageBtn.pageNum === currentPage) {
-                    pageBtn.isActive = true
-                }
-            })
-            res.locals.prevPage = prevPage
-            res.locals.nextPage = nextPage
-            res.locals.pageBtnArr = pageBtnArr
-
-            return Promise.all([
-                Category.findAll({
-                    attributes: ['id', 'name'],
-                    raw: true
-                }),
-                Record.findAll({
-                    attributes: ['id', 'name', 'date', 'amount'],
-                    where: { categoryId, userId },
-                    limit,
-                    offset,
-                    raw: true
-                }),
-                Record.sum('amount', {
-                    where: { userId, categoryId }
-                })
-            ])
-        })
-    }).then((data) => {
-        let [categories, records, totalAmount] = data
-
-        if (!totalAmount) {
-            totalAmount = 0
-        }
-
-        categories.forEach(category => {
-            if (categoryName === category.name) {
-                category.isSelected = true
-            }
-        })
-
-        records.forEach(record => {
-            record.icon = categoryIcons[categoryName]
-        })
-
-        return res.render('filtered-records', { categories, records, totalAmount, categoryName })
-    }).catch((err) => {
-        err.errorMessage = '前往頁面的過程發生了錯誤'
         return next(err)
     })
 })

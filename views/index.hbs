@@ -11,7 +11,8 @@
                     </button>
                     <ul class="dropdown-menu w-100">
                         {{#each categories as |category|}}
-                        <li><a class="dropdown-item" href="/records/filtered-by/{{category.name}}">{{category.name}}</a>
+                        <li><a class="dropdown-item {{#if category.isSelected}} active {{/if}}"
+                                href="/records?category={{category.name}}">{{category.name}}</a>
                         </li>
                         {{/each}}
                     </ul>
@@ -89,18 +90,23 @@
                 <nav>
                     <ul class="pagination">
                         <li class="page-item">
-                            <a class="page-link text-secondary" href="/records?page={{prevPage}}" aria-label="Previous">
+                            <a class="page-link text-secondary"
+                                href="/records?page={{prevPage}}{{#if categoryName}}&category={{categoryName}}{{/if}}"
+                                aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
                         {{#each pageBtnArr as |pageBtn|}}
-                        <li class="page-item {{#if pageBtn.isActive}} active {{/if}} {{#if pageBtn.isDisabled}} disabled {{/if}}">
+                        <li
+                            class="page-item {{#if pageBtn.isActive}} active {{/if}} {{#if pageBtn.isDisabled}} disabled {{/if}}">
                             <a class="page-link {{#if pageBtn.isActive}} {{else}} text-secondary {{/if}}"
-                                href="/records?page={{pageBtn.pageNum}}">{{pageBtn.pageNum}}</a>
+                                href="/records?page={{pageBtn.pageNum}}{{#if ../categoryName}}&category={{../categoryName}}{{/if}}">{{pageBtn.pageNum}}</a>
                         </li>
                         {{/each}}
                         <li class="page-item">
-                            <a class="page-link text-secondary" href="/records?page={{nextPage}}" aria-label="Next">
+                            <a class="page-link text-secondary"
+                                href="/records?page={{nextPage}}{{#if categoryName}}&category={{categoryName}}{{/if}}"
+                                aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
